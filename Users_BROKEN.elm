@@ -45,7 +45,7 @@ myStyle =
 
 -- WIRING
 main =
-   Signal.map2 view query.signal results.signal
+ view query.signal results.signal
 
 
 query : Signal.Mailbox String
@@ -53,7 +53,7 @@ query =
   Signal.mailbox ""
 
 
-results : Signal.Mailbox (Result String (List String))
+results : Signal.Mailbox (Result String (String))
 results =
   Signal.mailbox (Err "A valid US City contain only letters.")
 
@@ -64,23 +64,16 @@ port requests =
     |> Signal.map (\task -> Task.toResult task `andThen` Signal.send results.address)
 
 
-lookupCity : String -> Task String (List String)
+lookupCity : String -> Task String (String)
 lookupCity query =
   let toUrl =
         if (String.length query >= 4 && String.length query <= 20)
-        --then succeed ("http://api.zippopotam.us/us/tx/" ++ query)
         then succeed ("http://jsonplaceholder.typicode.com/users/1")
         else fail "Give me a valid US City!"
   in
       toUrl `andThen` (mapError (always "Not found.") << Http.get places)
 
 
-places : Json.Decoder (List String)
+places : Json.Decoder String
 places =
-  let place =
-        Json.object1 (\version -> version)
-          ("id" := Json.string)
-          --("termsofService" := Json.string)
-         -- ("longitude" := Json.string)
-  in
-      "address" := Json.list place
+  Json.at [ "address", "geo" ] Json.string
