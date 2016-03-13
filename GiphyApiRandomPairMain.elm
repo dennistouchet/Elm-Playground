@@ -1,5 +1,5 @@
 import Effects exposing (Never)
-import GiphyApiRandom exposing (init, update, view)
+import GiphyApiRandomPair exposing (init, update, view)
 import StartApp
 import Task
 

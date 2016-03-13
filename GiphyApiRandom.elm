@@ -81,6 +81,7 @@ getRandomGif topic =
         |> Task.toMaybe
         |> Task.map NewGif
         |> Effects.task
+    --Effects.task ( Task.map NewGif ( Task.toMaybe (Http.get decodeImageUrl (randomUrl topic)))) --alternative
 
 
 -- Given a topic, construct a URL for the giphy API.
