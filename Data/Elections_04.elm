@@ -38,13 +38,18 @@ init =
   ("...", getName)
 
 
-decodeName : Json.Decoder String
-decodeName =
-  "name" := Json.string
-
+elections : Json.Decoder (List String)
+elections =
+  let election =
+        Json.object3 (\id name electionDay -> id ++ ": " ++ name ++ ", " ++ electionDay)
+          ("id" := Json.string)
+          ("name" := Json.string)
+          ("electionDay" := Json.string)
+  in
+      "elections" := Json.list election
 
 userUrl : String
-userUrl = "http://jsonplaceholder.typicode.com/users/1"
+userUrl = "https://www.googleapis.com/civicinfo/v2/elections?key=AIzaSyCiNxthpYuUUCebKAfeqVoaFQqhogQhOBA"
 
 
 -- UPDATE

@@ -35,12 +35,15 @@ type alias Model = String
 
 init : (Model, Effects Action)
 init =
-  ("...", getName)
+  ("...", getUser)
 
 
-decodeName : Json.Decoder String
-decodeName =
-  "name" := Json.string
+decodeUser : Json.Decoder String
+decodeUser =
+        Json.object3 (\id username phone -> toString id ++ "," ++ username ++ "," ++ phone)
+          ("id" := Json.int)
+          ("username" := Json.string)
+          ("phone" := Json.string)
 
 
 userUrl : String
@@ -54,10 +57,10 @@ type Action = NewUser (Maybe String)
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
-  let name maybeName = Maybe.withDefault "error" maybeName
+  let user maybeUser = Maybe.withDefault "error" maybeUser
   in
     case action of
-      NewUser maybeName -> (name maybeName, Effects.none)
+      NewUser maybeUser -> (user maybeUser, Effects.none)
 
 
 -- VIEW
@@ -71,9 +74,9 @@ view address model =
 -- EFFECTS
 
 
-getName : Effects Action
-getName =
-  Http.get decodeName userUrl
+getUser : Effects Action
+getUser =
+  Http.get decodeUser userUrl
     |> Task.toMaybe
     |> Task.map NewUser
     |> Effects.task

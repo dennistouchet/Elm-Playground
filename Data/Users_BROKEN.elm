@@ -7,6 +7,12 @@ import Json.Decode as Json exposing ((:=))
 import String
 import Task exposing (..)
 
+-- MAIN
+
+
+main =
+ Signal.map2 view query.signal results.signal
+
 
 -- VIEW
 
@@ -14,7 +20,7 @@ view : String -> Result String (List String) -> Html
 view string result =
   let field =
         input
-          [ placeholder "Enter a city"
+          [ placeholder "Enter the word USERS"
           , value string
           , on "input" targetValue (Signal.message query.address)
           , myStyle
@@ -42,20 +48,16 @@ myStyle =
     , ("text-align", "center")
     ]
 
-
--- WIRING
-main =
- view query.signal results.signal
-
+-- EFFECTS 
 
 query : Signal.Mailbox String
 query =
   Signal.mailbox ""
 
 
-results : Signal.Mailbox (Result String (String))
+results : Signal.Mailbox (Result String (List String))
 results =
-  Signal.mailbox (Err "A valid US City contain only letters.")
+  Signal.mailbox (Err "Invalid")
 
 
 port requests : Signal (Task x ())
@@ -64,16 +66,22 @@ port requests =
     |> Signal.map (\task -> Task.toResult task `andThen` Signal.send results.address)
 
 
-lookupCity : String -> Task String (String)
+lookupCity : String -> Task String (List String)
 lookupCity query =
   let toUrl =
-        if (String.length query >= 4 && String.length query <= 20)
-        then succeed ("http://jsonplaceholder.typicode.com/users/1")
-        else fail "Give me a valid US City!"
+        if (String.length query >= 4 && String.length query <= 6)
+        then succeed ("http://jsonplaceholder.typicode.com/" ++ query)
+        else fail "Invalid query"
   in
-      toUrl `andThen` (mapError (always "Not found.") << Http.get places)
+      toUrl `andThen` (mapError (always "Not found.") << Http.get users)
 
 
-places : Json.Decoder String
-places =
-  Json.at [ "address", "geo" ] Json.string
+users : Json.Decoder (List String)
+users =
+    let user =
+        Json.object3 (\id username phone -> id ++ ": " ++ username ++ ", " ++ phone)
+          ("id" := Json.string)
+          ("username" := Json.string)
+          ("phone" := Json.string)
+  in
+        "" := Json.list user
