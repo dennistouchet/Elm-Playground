@@ -49,7 +49,7 @@ init =
 
 -- UPDATE
 
-type Action = Request | NewElection (List String )
+type Action = Request | NewElection (Maybe (List String ))
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -58,7 +58,7 @@ update action model =
       (model, getElection)
     
     NewElection els -> 
-        ( Model model.url model.elections
+        ( Model model.url (Maybe.withDefault model.elections els)
         , Effects.none
         )
 
@@ -74,13 +74,13 @@ results =
 -- VIEW
 
 
-view : Signal.Address ( List String -> Action ) -> Model -> Html
+view : Signal.Address Action -> Model -> Html
 view address model =
   let 
       field = 
         div [ style [ "width" => "200px" ] ]
         [ h2 [ myStyle ] [text model.url]
-        , button [ onClick address NewElection ] [ text "Call Elections" ]
+        , button [ onClick address Request ] [ text "Call Elections" ]
         ]
       
       messages =
@@ -113,7 +113,11 @@ getElections query =
 
 --getElection : String -> Effects Action --TODO: TYPE ANNOTATION ERROR? FIX
 getElection =
-    Effects.task ( Task.toMaybe (Task.map NewElection ( Http.get elections (electionUrl))))
+    electionUrl
+      |> Http.get elections
+      |> Task.toMaybe
+      |> Task.map NewElection
+      |> Effects.task
     
 (=>) = (,)
 
