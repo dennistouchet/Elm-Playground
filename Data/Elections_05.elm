@@ -41,7 +41,7 @@ type alias Model =
 init : (Model, Effects Action)
 init =
     ( 
-      { url = ""
+      { url = electionUrl
       , elections = ["..."] 
       }
       , getElection
@@ -61,15 +61,6 @@ update action model =
         ( Model model.url (Maybe.withDefault model.elections els)
         , Effects.none
         )
-
-query : Signal.Mailbox String
-query =
-  Signal.mailbox ""
-
-
-results : Signal.Mailbox (Result String (List String))
-results =
-  Signal.mailbox (Err "Error")
 
 -- VIEW
 
@@ -117,6 +108,7 @@ getElection =
       |> Http.get elections
       |> Task.toMaybe
       |> Task.map NewElection
+      |> Task.mapError (Debug.log "ERROR")
       |> Effects.task
     
 (=>) = (,)
