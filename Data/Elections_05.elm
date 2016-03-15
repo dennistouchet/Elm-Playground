@@ -113,7 +113,7 @@ getElections query =
 
 --getElection : String -> Effects Action --TODO: TYPE ANNOTATION ERROR? FIX
 getElection =
-    Effects.task ( Task.map NewElection ( Http.get elections (electionUrl)))
+    Effects.task ( Task.toMaybe (Task.map NewElection ( Http.get elections (electionUrl))))
     
 (=>) = (,)
 
