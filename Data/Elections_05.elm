@@ -117,8 +117,7 @@ getElection =
 electionUrl : String
 electionUrl =
     Http.url "https://www.googleapis.com/civicinfo/v2/elections"
-    [ "fields" => "elections(electionDay%2Cid%2Cname)"
-    , "key" => "AIzaSyCiNxthpYuUUCebKAfeqVoaFQqhogQhOBA"
+    [ "key" => "AIzaSyCiNxthpYuUUCebKAfeqVoaFQqhogQhOBA"
     ]
 
 
