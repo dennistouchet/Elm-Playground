@@ -106,16 +106,6 @@ gridStyle =
 
 -- HELPERS
 
-getElections : String -> Task String (List String)
-getElections query =
-  let toUrl =
-        if (String.length query >= 4 && String.length query <= 20) && not (String.all Char.isDigit query)
-          then succeed ("https://www.googleapis.com/civicinfo/v2/elections?fields=elections(electionDay%2Cid%2Cname)&key=AIzaSyCiNxthpYuUUCebKAfeqVoaFQqhogQhOBA")
-          else fail "Give me a valid US City!"
-  in
-      toUrl `andThen` (mapError (always "Not found.") << Http.get elections)
-
-
 --getElection : String -> Effects Action 
 getElection =
     electionUrl
