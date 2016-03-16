@@ -1,4 +1,4 @@
-module Elections_02 where
+module Elections_05 where
 
 import Effects exposing (Effects, Never)
 import Html exposing (..)
@@ -41,7 +41,7 @@ type alias Model =
 init : (Model, Effects Action)
 init =
     ( 
-      { url = electionUrl
+      { url = "Google Civic Info Election Data "--electionUrl
       , elections = ["..."] 
       }
       , getElection
@@ -69,26 +69,40 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   let 
       field = 
-        div [ style [ "width" => "200px" ] ]
-        [ h2 [ myStyle ] [text model.url]
-        , button [ onClick address Request ] [ text "Call Elections" ]
-        ]
+        div [ myStyle ] [ h1 [ ] [text model.url] ]
       
       messages =
-        List.map (\election -> div [ myStyle ] [ text election ] ) model.elections
+        List.map (\election -> div [ dataStyle ] [ text election ] ) model.elections
   in
-    div [] (field :: messages)
+    div [] [div [gridStyle] (field :: messages)]
 
 myStyle : Attribute
 myStyle =
   style
-    [ ("width", "100%")
+    [ ("width", "90%")
     , ("height", "40px")
-    , ("padding", "10px 0")
-    , ("font-size", "2em")
+    , ("margin", "0 0 40px 0") 
+--    , ("padding", "10px 5xp 5px 5px")
+--    , ("font-size", "2em")
     , ("text-align", "center")
     ]
 
+dataStyle : Attribute
+dataStyle =
+  style
+    [ ("width", "95%")
+    , ("height", "40px")
+    , ("padding", "1% 2% 0 2%")
+    , ("font-size", "20px")
+    , ("text-align", "left")
+    , ("border-style", "solid solid none solid")
+    ]
+
+gridStyle : Attribute
+gridStyle =
+  style
+    [ ("margin", "0 40px 0 40px") 
+    , ("border-style", "none none solid none") ]
 
 -- HELPERS
 
@@ -102,7 +116,7 @@ getElections query =
       toUrl `andThen` (mapError (always "Not found.") << Http.get elections)
 
 
---getElection : String -> Effects Action --TODO: TYPE ANNOTATION ERROR? FIX
+--getElection : String -> Effects Action 
 getElection =
     electionUrl
       |> Http.get elections

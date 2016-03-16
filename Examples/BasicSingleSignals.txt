@@ -1,0 +1,23 @@
+import Graphics.Element exposing (..)
+import Mouse
+import Time
+import Keyboard
+import Char
+import Window
+
+main : Signal Element
+main =
+    --Show Signal tuple of window dimensions
+    --Signal.map show(Window.dimensions)
+
+    --Keyboard input to Character
+    --Signal.map show (Signal.map Char.fromCode Keyboard.presses)
+     
+    --Keyboard Keycode input signal
+    --Signal.map show Keyboard.presses
+    
+    --Time signal
+    --Signal.map show (Time.every Time.millisecond)
+    
+    --Mouse position signal
+    --Signal.map show Mouse.position
